@@ -11,6 +11,7 @@ abstract final class AppStrings {
   static const String signIn = 'Sign In';
   static const String signInWithGoogle = 'Sign in with Google';
   static const String signOut = 'Sign out';
+  static const String confirmSignOut = 'Do you want to sign out?';
 
   static const String hintEmail = 'Enter email';
   static const String hintPassword = 'Enter password';

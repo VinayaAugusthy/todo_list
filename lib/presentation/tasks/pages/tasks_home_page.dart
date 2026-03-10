@@ -69,6 +69,31 @@ class TasksHomePage extends StatelessWidget {
     }
   }
 
+  Future<void> _confirmSignOut(BuildContext context) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text(AppStrings.signOut),
+        content: const Text(AppStrings.confirmSignOut),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text(AppStrings.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
+            child: const Text(AppStrings.signOut),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true && context.mounted) {
+      context.read<AuthBloc>().add(const AuthSignOutRequested());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final name = _displayName(user);
@@ -116,11 +141,7 @@ class TasksHomePage extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.logout, color: AppColors.primary),
                     tooltip: AppStrings.signOut,
-                    onPressed: () {
-                      context.read<AuthBloc>().add(
-                        const AuthSignOutRequested(),
-                      );
-                    },
+                    onPressed: () => _confirmSignOut(context),
                   ),
                 ],
               ),
