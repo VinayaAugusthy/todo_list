@@ -26,7 +26,8 @@ abstract final class AppStrings {
   static const String userFallback = 'User';
   static const String sessionPersistsMessage =
       'You are signed in. Your session persists across app restarts.';
-
+  static const String welcomeBack = 'Welcome back,';
+  static const String letsGetThingsDone = 'Let’s get things done today';
   static const String googleLogoAsset = 'assets/images/google_logo.png';
 
   // Tasks

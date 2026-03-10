@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
@@ -6,14 +8,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
 
 import '../../../data/repositories/auth_repository.dart';
+import '../../../data/repositories/user_profile_repository.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc({required AuthRepository authRepository})
-    : _authRepository = authRepository,
-      super(const AuthInitial()) {
+  AuthBloc({
+    required AuthRepository authRepository,
+    required UserProfileRepository userProfileRepository,
+  }) : _authRepository = authRepository,
+       _userProfileRepository = userProfileRepository,
+       super(const AuthInitial()) {
     on<AuthCheckRequested>(_onAuthCheckRequested);
     on<AuthSignUpRequested>(_onAuthSignUpRequested);
     on<AuthSignInRequested>(_onAuthSignInRequested);
@@ -22,6 +28,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   final AuthRepository _authRepository;
+  final UserProfileRepository _userProfileRepository;
 
   Future<void> _onAuthCheckRequested(
     AuthCheckRequested event,
@@ -46,8 +53,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         email: event.email,
         password: event.password,
       );
-      final user = credential.user;
+      var user = credential.user;
       if (user != null) {
+        final username = event.username.trim();
+        if (username.isNotEmpty) {
+          await user.updateDisplayName(username);
+          await _userProfileRepository.upsertProfile(
+            username: username,
+            email: user.email,
+          );
+          await user.reload();
+          user = FirebaseAuth.instance.currentUser ?? user;
+        }
         emit(Authenticated(user));
       } else {
         emit(const Unauthenticated());

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_list/core/constants/app_colors.dart';
 import 'package:todo_list/core/constants/app_strings.dart';
 import 'package:todo_list/core/constants/app_styles.dart';
+import 'package:todo_list/core/extensions/build_context_x.dart';
 import 'package:todo_list/presentation/auth/bloc/auth_bloc.dart';
 import 'package:todo_list/presentation/auth/pages/sign_up_page.dart';
 import 'package:todo_list/presentation/common/widgets/app_text_field.dart';
@@ -45,9 +46,9 @@ class _SigninScreenState extends State<SigninScreen> {
   void _signInWithEmail() {
     if (_emailController.text.trim().isEmpty ||
         _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        AppSnackBar.error(AppStrings.pleaseFillAllFields),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(AppSnackBar.error(AppStrings.pleaseFillAllFields));
       return;
     }
     context.read<AuthBloc>().add(
@@ -64,7 +65,7 @@ class _SigninScreenState extends State<SigninScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.sizeOf(context);
+    final size = context.screenSize;
 
     return Scaffold(
       body: Padding(
@@ -105,8 +106,8 @@ class _SigninScreenState extends State<SigninScreen> {
                         width: size.width,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.buttonActive,
-                            disabledBackgroundColor: AppColors.buttonDisabled,
+                            backgroundColor: AppColors.primary,
+                            disabledBackgroundColor: AppColors.primaryLight,
                           ),
                           onPressed: isActive ? _signInWithEmail : null,
                           child: isLoading
@@ -115,7 +116,7 @@ class _SigninScreenState extends State<SigninScreen> {
                                   width: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: AppColors.loadingIndicator,
+                                    color: AppColors.primaryDark,
                                   ),
                                 )
                               : const Text(
@@ -137,7 +138,7 @@ class _SigninScreenState extends State<SigninScreen> {
                             foregroundColor: AppColors.primary,
                             side: BorderSide(
                               color: isLoading
-                                  ? AppColors.buttonDisabled
+                                  ? AppColors.primaryLight
                                   : AppColors.primary,
                               width: 2,
                             ),

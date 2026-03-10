@@ -4,9 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_list/core/constants/app_colors.dart';
 import 'package:todo_list/core/constants/app_strings.dart';
 import 'package:todo_list/core/constants/app_styles.dart';
+import 'package:todo_list/core/extensions/build_context_x.dart';
 import 'package:todo_list/presentation/auth/bloc/auth_bloc.dart';
+import 'package:todo_list/presentation/auth/auth_gate.dart';
 import 'package:todo_list/presentation/auth/pages/sign_in_page.dart';
-import 'package:todo_list/presentation/home/home_page.dart';
 import 'package:todo_list/presentation/common/widgets/app_text_field.dart';
 import 'package:todo_list/presentation/common/widgets/app_snackbar.dart';
 
@@ -52,22 +53,23 @@ class _SignupScreenState extends State<SignupScreen> {
     if (_emailController.text.trim().isEmpty ||
         _passwordController.text.isEmpty ||
         _usernameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        AppSnackBar.error(AppStrings.pleaseFillAllFields),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(AppSnackBar.error(AppStrings.pleaseFillAllFields));
       return;
     }
     context.read<AuthBloc>().add(
       AuthSignUpRequested(
         email: _emailController.text.trim(),
         password: _passwordController.text,
+        username: _usernameController.text.trim(),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.sizeOf(context);
+    final size = context.screenSize;
 
     return Scaffold(
       body: Padding(
@@ -108,10 +110,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       if (state is Authenticated) {
                         Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(
-                            builder: (context) => HomePage(
-                              key: ValueKey('home_${state.user.uid}'),
-                              user: state.user,
-                            ),
+                            builder: (context) => const AuthGate(),
                           ),
                           (route) => false,
                         );
@@ -124,8 +123,8 @@ class _SignupScreenState extends State<SignupScreen> {
                         width: size.width,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.buttonActive,
-                            disabledBackgroundColor: AppColors.buttonDisabled,
+                            backgroundColor: AppColors.primary,
+                            disabledBackgroundColor: AppColors.primaryLight,
                           ),
                           onPressed: isActive ? _signUp : null,
                           child: isLoading
@@ -134,7 +133,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                   width: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: AppColors.loadingIndicator,
+                                    color: AppColors.primaryDark,
                                   ),
                                 )
                               : const Text(

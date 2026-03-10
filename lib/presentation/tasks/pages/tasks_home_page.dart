@@ -107,7 +107,10 @@ class TasksHomePage extends StatelessWidget {
                         Text(
                           name,
                           style: Theme.of(context).textTheme.headlineSmall
-                              ?.copyWith(fontWeight: FontWeight.w700),
+                              ?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.primary,
+                              ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),

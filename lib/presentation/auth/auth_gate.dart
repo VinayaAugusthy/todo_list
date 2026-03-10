@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_list/data/repositories/tasks_repository.dart';
 import 'package:todo_list/presentation/auth/bloc/auth_bloc.dart';
 import 'package:todo_list/presentation/auth/pages/sign_in_page.dart';
-import 'package:todo_list/presentation/home/home_page.dart';
 import 'package:todo_list/presentation/tasks/bloc/tasks_bloc.dart';
+import 'package:todo_list/presentation/tasks/pages/tasks_home_page.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -19,7 +19,7 @@ class AuthGate extends StatelessWidget {
             create: (context) => TasksBloc(
               tasksRepository: context.read<TasksRepository>(),
             )..add(const TasksLoadRequested()),
-            child: HomePage(
+            child: TasksHomePage(
               key: ValueKey('home_${state.user.uid}'),
               user: state.user,
             ),

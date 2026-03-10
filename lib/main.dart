@@ -6,6 +6,7 @@ import 'firebase_options.dart';
 import 'core/constants/app_colors.dart';
 import 'data/repositories/auth_repository.dart';
 import 'data/repositories/tasks_repository.dart';
+import 'data/repositories/user_profile_repository.dart';
 import 'presentation/auth/auth_gate.dart';
 import 'presentation/auth/bloc/auth_bloc.dart';
 
@@ -15,16 +16,22 @@ void main() async {
 
   final authRepository = AuthRepository();
   final tasksRepository = TasksRepository();
+  final userProfileRepository = UserProfileRepository();
 
   runApp(
     RepositoryProvider<AuthRepository>.value(
       value: authRepository,
       child: RepositoryProvider<TasksRepository>.value(
         value: tasksRepository,
-        child: BlocProvider(
-          create: (context) => AuthBloc(authRepository: authRepository)
-            ..add(const AuthCheckRequested()),
-          child: const MyApp(),
+        child: RepositoryProvider<UserProfileRepository>.value(
+          value: userProfileRepository,
+          child: BlocProvider(
+            create: (context) => AuthBloc(
+              authRepository: authRepository,
+              userProfileRepository: userProfileRepository,
+            )..add(const AuthCheckRequested()),
+            child: const MyApp(),
+          ),
         ),
       ),
     ),
