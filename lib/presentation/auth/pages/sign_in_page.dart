@@ -95,71 +95,72 @@ class _SigninScreenState extends State<SigninScreen> {
                     builder: (context, state) {
                       final isLoading = state is AuthLoading;
                       final isActive = _allFieldsFilled && !isLoading;
-                      return SizedBox(
-                        width: size.width,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            disabledBackgroundColor: AppColors.primaryLight,
-                          ),
-                          onPressed: isActive ? _signInWithEmail : null,
-                          child: isLoading
-                              ? SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: AppColors.primaryDark,
-                                  ),
-                                )
-                              : const Text(
-                                  AppStrings.signIn,
-                                  style: AppStyles.buttonText,
-                                ),
-                        ),
-                      );
-                    },
-                  ),
-                  SizedBox(height: size.height / 24),
-                  BlocBuilder<AuthBloc, AuthState>(
-                    builder: (context, state) {
-                      final isLoading = state is AuthLoading;
-                      return SizedBox(
-                        width: size.width,
-                        child: OutlinedButton.icon(
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: AppColors.primary,
-                            side: BorderSide(
-                              color: isLoading
-                                  ? AppColors.primaryLight
-                                  : AppColors.primary,
-                              width: 2,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 14,
-                              horizontal: 16,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                          onPressed: isLoading ? null : _signInWithGoogle,
-                          icon: SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: Image.asset(
-                              AppStrings.googleLogoAsset,
-                              fit: BoxFit.contain,
-                              errorBuilder: (_, _, _) => Image.asset(
-                                AppStrings.googleLogoAsset,
-                                fit: BoxFit.contain,
-                                errorBuilder: (_, _, _) =>
-                                    const Icon(Icons.g_mobiledata, size: 24),
+                      return Column(
+                        children: [
+                          SizedBox(
+                            width: size.width,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                disabledBackgroundColor: AppColors.primaryLight,
                               ),
+                              onPressed: isActive ? _signInWithEmail : null,
+                              child: isLoading
+                                  ? SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: AppColors.primaryDark,
+                                      ),
+                                    )
+                                  : const Text(
+                                      AppStrings.signIn,
+                                      style: AppStyles.buttonText,
+                                    ),
                             ),
                           ),
-                          label: const Text(AppStrings.signInWithGoogle),
-                        ),
+                          SizedBox(height: size.height / 24),
+                          SizedBox(
+                            width: size.width,
+                            child: OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: AppColors.primary,
+                                side: BorderSide(
+                                  color: isLoading
+                                      ? AppColors.primaryLight
+                                      : AppColors.primary,
+                                  width: 2,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                  horizontal: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              onPressed: isLoading ? null : _signInWithGoogle,
+                              icon: SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: Image.asset(
+                                  AppStrings.googleLogoAsset,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (_, _, _) => Image.asset(
+                                    AppStrings.googleLogoAsset,
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (_, _, _) => const Icon(
+                                      Icons.g_mobiledata,
+                                      size: 24,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              label: const Text(AppStrings.signInWithGoogle),
+                            ),
+                          ),
+                        ],
                       );
                     },
                   ),
