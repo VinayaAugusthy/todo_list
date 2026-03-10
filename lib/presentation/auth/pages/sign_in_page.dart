@@ -7,6 +7,7 @@ import 'package:todo_list/core/constants/app_styles.dart';
 import 'package:todo_list/presentation/auth/bloc/auth_bloc.dart';
 import 'package:todo_list/presentation/auth/pages/sign_up_page.dart';
 import 'package:todo_list/presentation/common/widgets/app_text_field.dart';
+import 'package:todo_list/presentation/common/widgets/app_snackbar.dart';
 
 class SigninScreen extends StatefulWidget {
   const SigninScreen({super.key});
@@ -45,7 +46,7 @@ class _SigninScreenState extends State<SigninScreen> {
     if (_emailController.text.trim().isEmpty ||
         _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(AppStrings.pleaseFillAllFields)),
+        AppSnackBar.error(AppStrings.pleaseFillAllFields),
       );
       return;
     }
@@ -94,7 +95,7 @@ class _SigninScreenState extends State<SigninScreen> {
                       if (state is AuthError) {
                         ScaffoldMessenger.of(
                           context,
-                        ).showSnackBar(SnackBar(content: Text(state.message)));
+                        ).showSnackBar(AppSnackBar.error(state.message));
                       }
                     },
                     builder: (context, state) {

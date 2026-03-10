@@ -21,5 +21,5 @@ abstract final class AppStyles {
     fontSize: linkFontSize,
   );
 
-  static const TextStyle buttonText = TextStyle(color: AppColors.buttonText);
+  static const TextStyle buttonText = TextStyle(color: AppColors.white);
 }

@@ -12,7 +12,7 @@ abstract final class AppColors {
   // Button
   static const Color buttonActive = primary;
   static const Color buttonDisabled = primaryLight;
-  static const Color buttonText = Colors.white;
+  static const Color white = Colors.white;
   static const Color loadingIndicator = primaryDark;
 
   // Link / emphasis text
