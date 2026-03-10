@@ -91,14 +91,7 @@ class _SigninScreenState extends State<SigninScreen> {
                     obscureText: true,
                   ),
                   SizedBox(height: size.height / 18),
-                  BlocConsumer<AuthBloc, AuthState>(
-                    listener: (context, state) {
-                      if (state is AuthError) {
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(AppSnackBar.error(state.message));
-                      }
-                    },
+                  BlocBuilder<AuthBloc, AuthState>(
                     builder: (context, state) {
                       final isLoading = state is AuthLoading;
                       final isActive = _allFieldsFilled && !isLoading;

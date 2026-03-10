@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_list/data/repositories/tasks_repository.dart';
 import 'package:todo_list/presentation/auth/bloc/auth_bloc.dart';
 import 'package:todo_list/presentation/auth/pages/sign_in_page.dart';
+import 'package:todo_list/presentation/common/widgets/app_snackbar.dart';
 import 'package:todo_list/presentation/tasks/bloc/tasks_bloc.dart';
 import 'package:todo_list/presentation/tasks/pages/tasks_home_page.dart';
 
@@ -12,7 +13,14 @@ class AuthGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthError) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(AppSnackBar.error(state.message));
+        }
+      },
       builder: (context, state) {
         if (state is Authenticated) {
           return BlocProvider(
