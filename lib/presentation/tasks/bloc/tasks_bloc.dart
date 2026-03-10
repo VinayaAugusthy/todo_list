@@ -21,6 +21,11 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
 
   final TasksRepository _tasksRepository;
 
+  Future<void> _loadAndEmit(Emitter<TasksState> emit) async {
+    final tasks = await _tasksRepository.getTasks();
+    emit(TasksLoaded(tasks));
+  }
+
   Future<void> _onTasksLoadRequested(
     TasksLoadRequested event,
     Emitter<TasksState> emit,
@@ -43,8 +48,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     try {
       await _tasksRepository.deleteTask(event.taskId);
       emit(const TasksLoading());
-      final tasks = await _tasksRepository.getTasks();
-      emit(TasksLoaded(tasks));
+      await _loadAndEmit(emit);
     } on TasksRepositoryException catch (e) {
       emit(TasksError(e.message));
     } catch (e) {
@@ -61,8 +65,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
         event.task.copyWith(isCompleted: !event.task.isCompleted),
       );
       emit(const TasksLoading());
-      final tasks = await _tasksRepository.getTasks();
-      emit(TasksLoaded(tasks));
+      await _loadAndEmit(emit);
     } on TasksRepositoryException catch (e) {
       emit(TasksError(e.message));
     } catch (e) {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:todo_list/core/constants/app_colors.dart';
 import 'package:todo_list/core/constants/app_strings.dart';
 import 'package:todo_list/core/extensions/task_priority_x.dart';
@@ -35,7 +34,10 @@ class AddTaskForm extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(isEditMode ? AppStrings.editTask : AppStrings.addTask),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.white,
+        iconTheme: const IconThemeData(color: AppColors.white),
+        centerTitle: true,
       ),
       body: Form(
         key: formKey,
@@ -61,17 +63,17 @@ class AddTaskForm extends StatelessWidget {
               segments: const [
                 ButtonSegment(
                   value: TaskPriority.low,
-                  icon: PriorityDot(color: Colors.green),
+                  icon: PriorityDot(color: AppColors.green),
                   label: Text(AppStrings.priorityLow),
                 ),
                 ButtonSegment(
                   value: TaskPriority.medium,
-                  icon: PriorityDot(color: Colors.amber),
+                  icon: PriorityDot(color: AppColors.amber),
                   label: Text(AppStrings.priorityMedium),
                 ),
                 ButtonSegment(
                   value: TaskPriority.high,
-                  icon: PriorityDot(color: Colors.red),
+                  icon: PriorityDot(color: AppColors.primary),
                   label: Text(AppStrings.priorityHigh),
                 ),
               ],
@@ -80,6 +82,7 @@ class AddTaskForm extends StatelessWidget {
                 context.read<AddTaskCubit>().priorityChanged(selected.first);
               },
               style: ButtonStyle(
+                iconColor: WidgetStateProperty.all(priorityColor),
                 side: WidgetStatePropertyAll(
                   BorderSide(color: priorityColor.withValues(alpha: 0.35)),
                 ),

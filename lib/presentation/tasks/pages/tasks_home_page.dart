@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:todo_list/core/constants/app_colors.dart';
 import 'package:todo_list/core/constants/app_strings.dart';
 import 'package:todo_list/core/extensions/task_priority_x.dart';
@@ -25,27 +24,20 @@ class TasksHomePage extends StatelessWidget {
     return AppStrings.userFallback;
   }
 
-  Future<void> _openAddTask(BuildContext context) async {
+  Future<void> _openAddOrEditTask(
+    BuildContext context, [
+    TaskModel? taskToEdit,
+  ]) async {
     final tasksRepository = context.read<TasksRepository>();
-    final added = await Navigator.of(context).push<bool>(
+    final addedOrUpdated = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (context) => AddTaskPage(tasksRepository: tasksRepository),
+        builder: (context) => AddTaskPage(
+          tasksRepository: tasksRepository,
+          taskToEdit: taskToEdit,
+        ),
       ),
     );
-    if (added == true && context.mounted) {
-      context.read<TasksBloc>().add(const TasksLoadRequested());
-    }
-  }
-
-  Future<void> _openEditTask(BuildContext context, TaskModel task) async {
-    final tasksRepository = context.read<TasksRepository>();
-    final updated = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(
-        builder: (context) =>
-            AddTaskPage(tasksRepository: tasksRepository, taskToEdit: task),
-      ),
-    );
-    if (updated == true && context.mounted) {
+    if (addedOrUpdated == true && context.mounted) {
       context.read<TasksBloc>().add(const TasksLoadRequested());
     }
   }
@@ -80,6 +72,7 @@ class TasksHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final name = _displayName(user);
+    final theme = Theme.of(context);
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -96,34 +89,26 @@ class TasksHomePage extends StatelessWidget {
                         const SizedBox(height: 16),
                         Text(
                           AppStrings.welcomeBack,
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           name,
-                          style: Theme.of(context).textTheme.headlineSmall
-                              ?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.primary,
-                              ),
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primary,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 6),
-
                         Text(
                           AppStrings.letsGetThingsDone,
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
                         ),
                       ],
                     ),
@@ -144,21 +129,21 @@ class TasksHomePage extends StatelessWidget {
 
             Expanded(
               child: BlocBuilder<TasksBloc, TasksState>(
-                builder: (context, state) => _buildBody(context, state),
+                builder: (context, state) => _buildBody(context, theme, state),
               ),
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _openAddTask(context),
+        onPressed: () => _openAddOrEditTask(context),
         backgroundColor: AppColors.primary,
         child: const Icon(Icons.add, color: AppColors.white),
       ),
     );
   }
 
-  Widget _buildBody(BuildContext context, TasksState state) {
+  Widget _buildBody(BuildContext context, ThemeData theme, TasksState state) {
     if (state is TasksLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -174,7 +159,7 @@ class TasksHomePage extends StatelessWidget {
               FilledButton(
                 onPressed: () =>
                     context.read<TasksBloc>().add(const TasksLoadRequested()),
-                child: const Text('Retry'),
+                child: const Text(AppStrings.retry),
               ),
             ],
           ),
@@ -188,11 +173,15 @@ class TasksHomePage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.check_circle_outline, size: 64),
+              const Icon(
+                Icons.check_circle_outline,
+                size: 64,
+                color: AppColors.primary,
+              ),
               const SizedBox(height: 16),
               Text(
                 AppStrings.tapToAdd,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: theme.textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
             ],
@@ -203,23 +192,24 @@ class TasksHomePage extends StatelessWidget {
     if (state is TasksLoaded && state.tasks.isNotEmpty) {
       final tasks = state.tasks;
       return ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         itemCount: tasks.length,
         itemBuilder: (context, index) {
           final task = tasks[index];
           final priorityColor = task.priority.color;
           return Card(
-            margin: const EdgeInsets.only(bottom: 8),
+            margin: const EdgeInsets.only(bottom: 12),
             child: ListTile(
-              isThreeLine: true,
+              dense: true,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 16,
-                vertical: 12,
+                vertical: 8,
               ),
               leading: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Checkbox(
+                    side: const BorderSide(color: AppColors.primary),
                     value: task.isCompleted,
                     onChanged: (_) {
                       if (!task.isCompleted) {
@@ -248,43 +238,41 @@ class TasksHomePage extends StatelessWidget {
               ),
               title: Text(
                 task.title,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (task.notes.isNotEmpty) ...[
-                    const SizedBox(height: 6),
-                    Text(
-                      task.notes,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                      maxLines: 4,
-                      overflow: TextOverflow.ellipsis,
+              subtitle: task.notes.isEmpty
+                  ? null
+                  : Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        task.notes,
+                        style: theme.textTheme.bodyMedium,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ],
-                ],
-              ),
-              trailing: Column(
+              trailing: Row(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit_outlined),
-                        onPressed: () => _openEditTask(context, task),
-                        tooltip: AppStrings.editTask,
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete_outline),
-                        onPressed: () => _confirmDeleteTask(context, task),
-                        tooltip: AppStrings.deleteTask,
-                      ),
-                    ],
+                  IconButton(
+                    icon: const Icon(
+                      Icons.edit_outlined,
+                      color: AppColors.blue,
+                    ),
+                    onPressed: () => _openAddOrEditTask(context, task),
+                    tooltip: AppStrings.editTask,
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.delete_outline,
+                      color: AppColors.primary,
+                    ),
+                    onPressed: () => _confirmDeleteTask(context, task),
+                    tooltip: AppStrings.deleteTask,
                   ),
                 ],
               ),

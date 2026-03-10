@@ -57,4 +57,5 @@ abstract final class AppStrings {
   static const String delete = 'Delete';
   static const String taskDeleted = 'Task deleted';
   static const String taskCompleted = 'Task marked as completed';
+  static const String retry = 'Retry';
 }

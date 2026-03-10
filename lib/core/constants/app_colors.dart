@@ -11,4 +11,5 @@ abstract final class AppColors {
   static const Color white = Color(0xFFFFFFFF);
   static const Color green = Color(0xFF4CAF50);
   static const Color amber = Color(0xFFFFC107);
+  static const Color blue = Color(0xFF2196F3);
 }

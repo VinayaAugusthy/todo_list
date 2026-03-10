@@ -43,7 +43,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
   }
 
   void _submit(BuildContext formContext) {
-    if (!_formKey.currentState!.validate()) return;
+    if (_formKey.currentState?.validate() != true) return;
     final cubit = formContext.read<AddTaskCubit>();
     cubit.submitTask(
       title: _titleController.text.trim(),
@@ -62,9 +62,12 @@ class _AddTaskPageState extends State<AddTaskPage> {
       child: BlocListener<AddTaskCubit, AddTaskState>(
         listener: (context, state) {
           if (state is AddTaskSuccess) {
-            final msg =
-                state.isEditMode ? AppStrings.taskUpdated : AppStrings.taskAdded;
-            ScaffoldMessenger.of(context).showSnackBar(AppSnackBar.success(msg));
+            final msg = state.isEditMode
+                ? AppStrings.taskUpdated
+                : AppStrings.taskAdded;
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(AppSnackBar.success(msg));
             Navigator.of(context).pop(true);
           }
           if (state is AddTaskError) {
