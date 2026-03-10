@@ -57,6 +57,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '488437626321',
     projectId: 'todolist-9a495',
     storageBucket: 'todolist-9a495.firebasestorage.app',
+    iosClientId: '488437626321-47cpva4aavnasbkvj6phjcdnhosl54n9.apps.googleusercontent.com',
     iosBundleId: 'com.example.todoList',
   );
 
@@ -66,6 +67,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '488437626321',
     projectId: 'todolist-9a495',
     storageBucket: 'todolist-9a495.firebasestorage.app',
+    iosClientId: '488437626321-47cpva4aavnasbkvj6phjcdnhosl54n9.apps.googleusercontent.com',
     iosBundleId: 'com.example.todoList',
   );
 
@@ -77,4 +79,5 @@ class DefaultFirebaseOptions {
     authDomain: 'todolist-9a495.firebaseapp.com',
     storageBucket: 'todolist-9a495.firebasestorage.app',
   );
+
 }

@@ -1,0 +1,30 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:todo_list/presentation/auth/bloc/auth_bloc.dart';
+import 'package:todo_list/presentation/auth/pages/sign_in_page.dart';
+import 'package:todo_list/presentation/home/home_page.dart';
+
+class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        if (state is Authenticated) {
+          return HomePage(
+            key: ValueKey('home_${state.user.uid}'),
+            user: state.user,
+          );
+        }
+        if (state is AuthLoading || state is AuthInitial) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        return const SigninScreen();
+      },
+    );
+  }
+}
