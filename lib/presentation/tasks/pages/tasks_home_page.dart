@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:todo_list/core/constants/app_colors.dart';
 import 'package:todo_list/core/constants/app_strings.dart';
+import 'package:todo_list/core/extensions/task_priority_x.dart';
 import 'package:todo_list/data/models/task_model.dart';
 import 'package:todo_list/data/repositories/tasks_repository.dart';
 import 'package:todo_list/presentation/auth/bloc/auth_bloc.dart';
@@ -11,10 +12,18 @@ import 'package:todo_list/presentation/common/widgets/app_snackbar.dart';
 import 'package:todo_list/presentation/tasks/bloc/tasks_bloc.dart';
 import 'package:todo_list/presentation/tasks/pages/add_task_page.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key, required this.user});
+class TasksHomePage extends StatelessWidget {
+  const TasksHomePage({super.key, required this.user});
 
   final User user;
+
+  String _displayName(User user) {
+    final name = user.displayName?.trim();
+    if (name != null && name.isNotEmpty) return name;
+    final email = user.email?.trim();
+    if (email != null && email.contains('@')) return email.split('@').first;
+    return AppStrings.userFallback;
+  }
 
   Future<void> _openAddTask(BuildContext context) async {
     final tasksRepository = context.read<TasksRepository>();
@@ -70,27 +79,78 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final name = _displayName(user);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppStrings.appTitle),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: AppStrings.signOut,
-            onPressed: () {
-              context.read<AuthBloc>().add(const AuthSignOutRequested());
-            },
-          ),
-        ],
-      ),
-      body: BlocBuilder<TasksBloc, TasksState>(
-        builder: (context, state) => _buildBody(context, state),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 16),
+                        Text(
+                          AppStrings.welcomeBack,
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          name,
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(fontWeight: FontWeight.w700),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 6),
+
+                        Text(
+                          AppStrings.letsGetThingsDone,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.logout, color: AppColors.primary),
+                    tooltip: AppStrings.signOut,
+                    onPressed: () {
+                      context.read<AuthBloc>().add(
+                        const AuthSignOutRequested(),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            Expanded(
+              child: BlocBuilder<TasksBloc, TasksState>(
+                builder: (context, state) => _buildBody(context, state),
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _openAddTask(context),
         backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add,color: AppColors.white ),
+        child: const Icon(Icons.add, color: AppColors.white),
       ),
     );
   }
@@ -144,11 +204,7 @@ class HomePage extends StatelessWidget {
         itemCount: tasks.length,
         itemBuilder: (context, index) {
           final task = tasks[index];
-          final priorityColor = switch (task.priority) {
-            TaskPriority.high => Colors.red,
-            TaskPriority.medium => Colors.amber,
-            TaskPriority.low => Colors.green,
-          };
+          final priorityColor = task.priority.color;
           return Card(
             margin: const EdgeInsets.only(bottom: 8),
             child: ListTile(

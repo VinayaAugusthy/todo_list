@@ -16,7 +16,7 @@ abstract final class AppStyles {
   );
 
   static const TextStyle linkText = TextStyle(
-    color: AppColors.link,
+    color: AppColors.primary,
     fontWeight: FontWeight.bold,
     fontSize: linkFontSize,
   );
